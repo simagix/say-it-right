@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "C-2025-001",
+    "title": "Replication lag spikes",
+    "customer_desc": "We cannot read from one node since last night. App throws errors every few minutes. Reporting is down; urgent.",
+    "analysis_notes": [
+      "Secondary rs1-node3 unreachable since 02:14 UTC",
+      "Primary healthy; no elections",
+      "readPreference=secondaryPreferred",
+      "Restart at 03:00 failed to rejoin",
+      "Suspected disk corruption"
+    ]
+  },
+  {
+    "_id": "C-2025-002",
+    "title": "Slow aggregation with $lookup",
+  "customer_desc": "Our order reporting API is very slow since yesterday. Endpoints time out after 10–15 seconds. We didn't change anything but now the reports just take forever, sometimes it works but mostly not, and users are getting frustrated because they need the data for their daily work. We tried restarting the service but it didn't help. Please help us fix this as soon as possible because it's affecting our business operations and we have no idea what else to do.",
+    "analysis_notes": [
+      "P95 query latency = 15s on /orders endpoint",
+      "Large orders.items array with nested lookups",
+      "Missing compound index on {userId, createdAt}",
+      "Scan-heavy $lookup across collections",
+      "Last known good P95 = 2s (yesterday)"
+    ]
+  },
+  {
+    "_id": "C-2025-003",
+    "title": "Backup groom job stalled",
+  "customer_desc": "backup not working, we see some warning about grooming or something, not sure what it means but backups just stuck for long time, we need backup to work because boss says data is important, can you check why this is happening and fix it? also we saw some error but didn't write it down, sorry. backups used to work fine before but now not. please help. (Backups are stuck and we see warning messages about grooming. We’re worried about data protection. This is urgent because we need to make sure our data is safe and we can't afford to lose anything.)",
+    "analysis_notes": [
+      "Groom backlog growing 12h",
+      "S3 requests returning 429 Too Many Requests",
+      "High object count in bucket",
+      "Throttle policy changed at 00:30 UTC",
+      "Risk of RPO violation if failure continues"
+    ]
+  },
+  {
+    "_id": "C-2025-004",
+    "title": "Index build causing lock contention",
+  "customer_desc": "app is slow, like really slow, users keep saying it takes forever to load, we did start some index thing this morning but didn't think it would be this bad. now people are mad and we don't know if we should stop the index or just wait. can you tell us what to do? also, is there a way to make it faster? (Application latency doubled today; users are complaining. We started an index build earlier. The team is unsure if the index build is the cause or if something else is wrong. Any advice would be appreciated.)",
+    "analysis_notes": [
+      "Background index build on 80M documents started 09:00 UTC",
+      "CPU saturation 95% on primary",
+      "Latency of writes increased 2×",
+      "Some queries waiting on collection scan locks",
+      "ETA for build completion = 6h"
+    ]
+  },
+  {
+    "_id": "C-2025-005",
+    "title": "Atlas trigger failed to fire",
+  "customer_desc": "triggers not working, invoices not syncing, we need this to work because accounting is mad, it was working before but now nothing happens, we didn't change anything (I think), can you check? we need this fixed fast, please. (We rely on triggers to sync invoices; they stopped running since yesterday morning. This is causing delays in our billing process and we are not sure what went wrong. Any help would be appreciated.)",
+    "analysis_notes": [
+      "Trigger execution stopped 07:40 UTC",
+      "Logs show authentication error with external API",
+      "No trigger retries observed",
+      "Manual run of function succeeds",
+      "Webhook endpoint recently rotated credentials"
+    ]
+  }
+]

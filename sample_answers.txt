@@ -1,0 +1,15 @@
+Node down since yesterday, customer upset. We tried restart but it didn’t work. Probably 
+something wrong with disk. Someone needs to look at it. Reporting broken. 
+
+Customer reports node3 is unreachable since last night, causing reporting failures. Restart 
+attempt at 03:00 UTC did not succeed. Primary is still healthy. Impact is intermittent read 
+failures. Possible disk issue, needs further analysis. Next shift should check logs and 
+decide if node rebuild is required. 
+
+Customer has been unable to read from node3 since 02:14 UTC, resulting in broken reporting 
+dashboards. Primary remains healthy and no elections occurred, but the app uses 
+secondaryPreferred, so queries often target the down node. Restart at 03:00 UTC failed; 
+logs indicate potential disk corruption. Current risk: degraded reads and possible SLA 
+breach if sync not restored promptly. Actions so far: restart attempt, monitoring primary 
+stability. Next steps: re-provision node3 on a clean disk and re-sync from primary (~2 hours). 
+Please update the customer every 30 minutes. 

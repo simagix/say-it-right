@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# VSCode
+.vscode/
+
+# macOS
+.DS_Store
+
+# Test & coverage
+.coverage
+htmlcov/
+
+# Node (if you add a frontend)
+node_modules/
+build/
+dist/
+
+# Logs
+*.log
+
+# Misc
+*.sqlite3
+*.db

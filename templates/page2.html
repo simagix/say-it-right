@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Review – {{case.title}}</title>
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet'>
+</head>
+<body class='bg-light'>
+<div class='container my-5' style="background: #f6fcf8; border-radius: 1rem; box-shadow: 0 2px 12px #0002; padding: 2rem 1.5rem;">
+    <div class='d-flex justify-content-end mb-3'>
+        <div style="background: #e7f1fa; border-radius: 0.5rem; padding: 0.5rem 1rem;">
+    <a href="/" class="btn btn-success">Home</a>
+        </div>
+    </div>
+    <div class='card shadow-sm p-4'>
+    <h2 class='mb-3 fw-bold text-success'>{{case.title}}</h2>
+        <p><b>Submission by:</b> {{submission.author or "anonymous"}} | <b>At:</b> {{submission.created_at}}</p>
+        <h4>Your Summary</h4>
+        <pre class='bg-light p-3 border rounded' style='white-space:pre-wrap'>{{submission.text}}</pre>
+        <h4 class='mt-4'>AI Grades ({{review.model}})</h4>
+        <ul class='list-group mb-3'>
+            <li class='list-group-item'>Clarity: <b>{{review.scores.clarity}}</b></li>
+            <li class='list-group-item'>Completeness: <b>{{review.scores.completeness}}</b></li>
+            <li class='list-group-item'>Actionability: <b>{{review.scores.actionability}}</b></li>
+            <li class='list-group-item'>Tone: <b>{{review.scores.tone}}</b></li>
+            <li class='list-group-item'>Conciseness: <b>{{review.scores.conciseness}}</b></li>
+        </ul>
+        {% set pct = (review.total / 40 * 100) | round(0) %}
+    <p><b>Total:</b> <span class="badge bg-success fs-5">{{review.total}} / 40 ({{pct}}%)</span></p>
+        <p class="text-muted">
+        Formula: (Clarity + Completeness + Actionability) × 2 + Tone + Conciseness
+        </p>
+        <h4 class='mt-4'>Suggestions</h4>
+        <ol class='list-group list-group-numbered mb-4'>
+            {% for f in review.feedback %}
+                <li class='list-group-item'><b>{{f.aspect}}</b>: {{f.issue}} — <i>{{f.fix}}</i></li>
+            {% endfor %}
+        </ol>
+    <a href="{{ url_for('show_case', case_id=case._id) }}" class='btn btn-success'>Try another attempt</a>
+    </div>
+</div>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'></script>
+</body>
+</html>

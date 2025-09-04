@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Select a Case</title>
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' rel='stylesheet'>
+</head>
+<body class='bg-light'>
+<div class='container my-5' style="background: #f6fcf8; border-radius: 1rem; box-shadow: 0 2px 12px #0002; padding: 2rem 1.5rem;">
+    <div class='text-center mb-5'>
+    <h1 class='display-4 fw-bold mb-2 text-success'>Say It Right</h1>
+        <p class='lead text-secondary'>Practice writing shift briefings and get instant AI-powered feedback.</p>
+    </div>
+    <div class='card shadow-sm p-4 mb-4'>
+        <h2 class='mb-3'>How It Works</h2>
+        <ol class='mb-0'>
+            <li>Select a case from the dropdown below and click <b>Go</b>.</li>
+            <li>Read the customer description and analysis notes.<br>
+                <span class='text-muted'>Note: Customer descriptions may be lengthy or poorly written, just like real life. Analysis notes can come from you or your peers.</span>
+            </li>
+            <li>Write your shift briefing summary and submit it for grading.</li>
+            <li>The AI will review your summary and provide scores and feedback.</li>
+            <li>Review your results and try again to improve your score!</li>
+        </ol>
+    </div>
+    <div class='card shadow-sm p-4'>
+        <h1 class='mb-4'>Select a Case to Practice</h1>
+        <form method='get' action='/case'>
+            <div class='mb-3'>
+                <label for='case_id' class='form-label'>Case:</label>
+                <select name='id' id='case_id' class='form-select' required>
+                    <option value='' disabled selected>Select a case to practice...</option>
+                    {% for c in cases %}
+                        <option value='{{c._id}}'>{{c._id}} — {{c.title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type='submit' class='btn btn-success'>Go</button>
+        </form>
+    </div>
+</div>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'></script>
+</body>
+</html>
