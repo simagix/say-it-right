@@ -43,7 +43,7 @@ def show_case(case_id):
     doc = cases.find_one({"_id": case_id})
     if not doc:
         abort(404)
-    return render_template("page1.html", case=doc)
+    return render_template("practice.html", case=doc)
 
 @app.post("/case/<case_id>")
 def submit_case(case_id):
@@ -100,11 +100,13 @@ def review_submission(submission_id):
     # make dicts attribute-like for Jinja
     class O(dict):
         __getattr__ = dict.get
+    max_score = 40
     return render_template(
-        "page2.html",
+        "review.html",
         case=O(case),
         submission=O({**sub, "created_at": sub["created_at"].strftime("%Y-%m-%d %H:%M UTC")}),
-        review=O({**rev, "scores": O(rev["scores"])})
+        review=O({**rev, "scores": O(rev["scores"])}),
+        max_score=max_score
     )
 
 if __name__ == "__main__":

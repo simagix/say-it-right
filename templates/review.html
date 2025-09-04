@@ -26,8 +26,8 @@
             <li class='list-group-item'>Tone: <b>{{review.scores.tone}}</b></li>
             <li class='list-group-item'>Conciseness: <b>{{review.scores.conciseness}}</b></li>
         </ul>
-        {% set pct = (review.total / 40 * 100) | round(0) %}
-    <p><b>Total:</b> <span class="badge bg-success fs-5">{{review.total}} / 40 ({{pct}}%)</span></p>
+        {% set pct = (review.total / max_score * 100) | round(0) %}
+    <p><b>Total:</b> <span class="badge bg-success fs-5">{{review.total}} / {{max_score}} ({{pct}}%)</span></p>
         <p class="text-muted">
         Formula: (Clarity + Completeness + Actionability) × 2 + Tone + Conciseness
         </p>
