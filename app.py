@@ -3,19 +3,16 @@ app.py
 @ken.chen
 """
 import os, datetime
-from flask import Flask, request, redirect, url_for, render_template, render_template_string, abort
+from flask import Flask, request, redirect, url_for, render_template, abort
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from llm_utils import ollama_generate, extract_first_json, build_prompt, total_score, set_llm_config
+from llm_utils import llm_generate, extract_first_json, build_prompt, total_score, get_model
 
 # Load variables from .env into os.environ
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/training")
-
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
-MODEL_NAME = os.getenv("OLLAMA_MODEL", "mistral:7b-instruct")
-set_llm_config(OLLAMA_URL, MODEL_NAME)
+LLM_BACKEND = os.getenv("LLM_BACKEND", "ollama")
 
 client = MongoClient(MONGO_URI)
 db = client.get_database()  # uses DB in URI; else 'edu'
@@ -59,20 +56,20 @@ def submit_case(case_id):
         "case_id": case_id,
         "author": author or None,
         "text": text,
-        "created_at": datetime.datetime.utcnow()
+        "created_at": datetime.datetime.now(datetime.timezone.utc)
     }
     sub_id = submissions.insert_one(sub).inserted_id
 
     # Grade with mistral
     prompt = build_prompt(doc["customer_desc"], doc.get("analysis_notes", []), text)
-    raw = ollama_generate(MODEL_NAME, prompt)
+    raw = llm_generate(prompt, LLM_BACKEND)
     parsed = extract_first_json(raw)
     scores = parsed.get("scores", {})
     feedback = parsed.get("feedback", [])
 
     rev = {
         "submission_id": sub_id,
-        "model": MODEL_NAME,
+        "model": get_model(LLM_BACKEND),
         "scores": {
             "clarity": scores.get("clarity", 0),
             "completeness": scores.get("completeness", 0),
@@ -82,7 +79,7 @@ def submit_case(case_id):
         },
         "total": total_score(scores),
         "feedback": feedback,
-        "created_at": datetime.datetime.utcnow()
+        "created_at": datetime.datetime.now(datetime.timezone.utc)
     }
     reviews.insert_one(rev)
     return redirect(url_for("review_submission", submission_id=str(sub_id)))

@@ -3,22 +3,67 @@ llm_utils.py
 @ken.chen
 Utility functions for LLM integration (Ollama, etc.)
 """
-import re
+import re, os, time
 import json
+import logging
 import requests
+from openai.lib.azure import AzureOpenAI
 
-OLLAMA_URL = None  # Set from app.py or via setter
-MODEL_NAME = None
+LLM_BACKEND = None  # 'ollama', 'openai', 'azure', etc.
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-def set_llm_config(url, model):
-    global OLLAMA_URL, MODEL_NAME
-    OLLAMA_URL = url
-    MODEL_NAME = model
-
-def ollama_generate(model: str, prompt: str) -> str:
-    r = requests.post(OLLAMA_URL, json={"model": model, "prompt": prompt, "stream": False}, timeout=120)
-    r.raise_for_status()
-    return r.json().get("response", "")
+def llm_generate(prompt: str, llm_backend: str = None) -> str:
+    """
+    Unified LLM call. Selects backend based on LLM_BACKEND.
+    """
+    if llm_backend == 'ollama':
+        start = time.time()
+        url = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+        model = os.getenv("OLLAMA_MODEL", "mistral:7b-instruct")
+        r = requests.post(url, json={"model": model, "prompt": prompt, "stream": False}, timeout=120)
+        r.raise_for_status()
+        elapsed = time.time() - start
+        logger.info(f"LLM call, model {model} took {elapsed:.2f} seconds")
+        return r.json().get("response", "")
+    elif llm_backend == 'openai':
+        # Example stub: implement OpenAI API call here
+        # import openai
+        # openai.api_key = LLM_CONFIG['api_key']
+        # response = openai.ChatCompletion.create(...)
+        # return response['choices'][0]['message']['content']
+        raise NotImplementedError("OpenAI backend not implemented yet.")
+    elif llm_backend == 'azure':
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
+        model = os.getenv("AZURE_OPENAI_MODEL")
+        az_client = AzureOpenAI(
+            api_version=os.getenv("AZURE_OPENAI_VERSION"),
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        )
+        response = az_client.chat.completions.create(
+                messages=messages,
+                max_tokens=2048,
+                temperature=0.0,
+                top_p=1.0,
+                model=model
+            )
+        return response.choices[0].message.content
+    else:
+        raise ValueError(f"Unknown LLM backend: {llm_backend}")
+    
+def get_model(llm_backend):
+    if llm_backend == 'ollama':
+        return os.getenv("OLLAMA_MODEL", "mistral:7b-instruct")
+    elif llm_backend == 'openai':
+        return os.getenv("OPENAI_MODEL", "gpt-4")
+    elif llm_backend == 'azure':
+        return os.getenv("AZURE_OPENAI_MODEL", "gpt-4")
+    else:
+        raise ValueError(f"Unknown LLM backend: {llm_backend}")
 
 def extract_first_json(text: str) -> dict:
     m = re.search(r"\{.*\}", text, re.S)
